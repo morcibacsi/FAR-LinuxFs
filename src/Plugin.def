@@ -1,0 +1,12 @@
+EXPORTS
+    GetGlobalInfoW
+    SetStartupInfoW
+    GetPluginInfoW
+    AnalyseW
+    OpenW
+    ClosePanelW
+    GetOpenPanelInfoW
+    GetFindDataW
+    FreeFindDataW
+    SetDirectoryW
+    GetFilesW
