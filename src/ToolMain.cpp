@@ -44,7 +44,7 @@ namespace
     {
         if (argc < 3)
         {
-            Print(L"usage: ubifsx info|list <image>\n       ubifsx extract <image> <directory>");
+            Print(L"usage: linuxfs info|list <image>\n        linuxfs extract <image> <directory>");
             return 2;
         }
 

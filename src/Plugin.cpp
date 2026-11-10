@@ -20,7 +20,7 @@ namespace
     // {BC24E8D0-263B-4B3A-8A52-EEB9EF1E94C7}
     constexpr UUID DestinationGuid = { 0xbc24e8d0, 0x263b, 0x4b3a, { 0x8a, 0x52, 0xee, 0xb9, 0xef, 0x1e, 0x94, 0xc7 } };
 
-    constexpr const wchar_t* PluginTitle = L"UBIFS Extract";
+    constexpr const wchar_t* PluginTitle = L"LinuxFS";
     constexpr size_t PathBufferSize = 32768;
     constexpr ULONGLONG ProgressIntervalMs = 150;
     constexpr size_t MaxDisplayedPath = 64;
@@ -253,7 +253,7 @@ namespace
 
             if (interactive)
             {
-                if (!Psi.InputBox(&PluginGuid, &DestinationGuid, PluginTitle, L"Extract to:", L"UbiFsExtractDestination",
+                if (!Psi.InputBox(&PluginGuid, &DestinationGuid, PluginTitle, L"Extract to:", L"LinuxFSDestination",
                     destination.c_str(), buffer.data(), buffer.size(), nullptr, FIB_BUTTONS | FIB_EDITPATH | FIB_NOUSELASTHISTORY))
                     return -1;
                 destination = buffer.data();
@@ -377,11 +377,11 @@ extern "C"
     {
         info->StructSize = sizeof *info;
         info->MinFarVersion = FARMANAGERVERSION;
-        info->Version = MAKEFARVERSION(1, 0, 0, 0, VS_RELEASE);
+        info->Version = MAKEFARVERSION(LINUXFS_VERSION_MAJOR, LINUXFS_VERSION_MINOR, LINUXFS_VERSION_PATCH, 0, VS_RELEASE);
         info->Guid = PluginGuid;
         info->Title = PluginTitle;
         info->Description = L"Browse and extract UBIFS and ext2/3/4 images";
-        info->Author = L"UbiFsExtract";
+        info->Author = L"LinuxFS";
     }
 
     void WINAPI SetStartupInfoW(const PluginStartupInfo* info)

@@ -1,0 +1,77 @@
+name: Build release ZIPs
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+
+jobs:
+  package:
+    if: ${{ !github.event.deleted }}
+    runs-on: windows-2025-vs2026
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: LinuxFS
+
+    steps:
+      - name: Read version from tag
+        working-directory: .
+        run: |
+          if (-not ($env:GITHUB_REF_NAME -cmatch '^v(?<version>(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*))$')) {
+            throw "Expected a version tag such as v1.0.1, got '$env:GITHUB_REF_NAME'."
+          }
+          "RELEASE_VERSION=$($Matches.version)" >> $env:GITHUB_ENV
+
+      - uses: actions/checkout@v7
+        with:
+          path: LinuxFS
+          persist-credentials: false
+
+      # Pinned so that the plugin's minimum FAR version does not change between releases.
+      - name: Check out the FAR plugin SDK
+        uses: actions/checkout@v7
+        with:
+          repository: FarGroup/FarManager
+          ref: b16f95d4d1986871b240e2dd319afc1ce3f396fb
+          path: FarManager
+          sparse-checkout: plugins/common/unicode
+          persist-credentials: false
+
+      - name: Build, test and package x86 and x64
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          foreach ($arch in 'x86', 'x64') {
+            $platform = if ($arch -eq 'x86') { 'Win32' } else { 'x64' }
+            cmake -S . -B "out/$arch" -G 'Visual Studio 18 2026' -A $platform "-DLINUXFS_VERSION=$env:RELEASE_VERSION"
+            cmake --build "out/$arch" --config Release -- /nr:false
+            & "out/$arch/bin/Release/test_decompress.exe"
+            cpack --config "out/$arch/CPackConfig.cmake" -C Release -B out/packages
+          }
+
+      - name: Attach ZIPs to a draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          $assets = foreach ($arch in 'x86', 'x64') {
+            (Get-Item -LiteralPath "out/packages/LinuxFS-$env:RELEASE_VERSION-$arch.zip").FullName
+          }
+          $PSNativeCommandUseErrorActionPreference = $false
+          $release = gh release view $tag --repo $env:GITHUB_REPOSITORY --json isDraft 2>$null
+          $exists = $LASTEXITCODE -eq 0
+          $PSNativeCommandUseErrorActionPreference = $true
+
+          if (!$exists) {
+            gh release create $tag @assets --repo $env:GITHUB_REPOSITORY --verify-tag --draft --title $tag --generate-notes
+          } elseif (($release | ConvertFrom-Json).isDraft) {
+            gh release upload $tag @assets --repo $env:GITHUB_REPOSITORY --clobber
+          } else {
+            Write-Host "Release $tag is already published. Its assets were left as published."
+          }
