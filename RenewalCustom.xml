@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<renewal>
+  <pd>
+    <mod guid="{CA7366B4-EB32-4F41-A060-9727CCD17A7C}" name="LinuxFS">
+      <homepage>https://github.com/morcibacsi/FAR-LinuxFs</homepage>
+      <changelog>https://github.com/morcibacsi/FAR-LinuxFs/releases</changelog>
+      <dlpage>https://api.github.com/repos/morcibacsi/FAR-LinuxFs/releases/latest</dlpage>
+      <dlrgex>"browser_download_url":\s*"(https://github\.com/morcibacsi/FAR-LinuxFs/releases/download/[^"\s/]+/LinuxFS-(\d+)\.(\d+)\.(\d+)-${ARCH}\.zip)"</dlrgex>
+    </mod>
+  </pd>
+</renewal>

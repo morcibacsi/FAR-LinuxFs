@@ -47,11 +47,15 @@ To install, copy `LinuxFS.dll` and `README.md` into `Plugins\LinuxFS` under your
 
 Earlier builds were called UbiFsExtract. Delete the old `Plugins\UbiFsExtract` folder when upgrading: both are the same plugin to FAR, so it would load only one of them.
 
+## Updates through Renewal
+
+Copy `RenewalCustom.xml` from the release ZIP next to `Renewal.dll`. If a `RenewalCustom.xml` is already there, add the LinuxFS `<mod>` entry to its `<pd>` section instead. Then check for updates in Renewal. If you set up LinuxFS in Renewal before, enable the custom source for its entry.
+
 ## Versions and releases
 
 The version defaults to 1.0.0. Pass `-DLINUXFS_VERSION=1.2.3` when configuring to change it. It is written into the version resource of `LinuxFS.dll` and `linuxfs.exe`, and into the plugin version FAR displays.
 
-To publish a release, push a tag such as `v1.2.3` to GitHub. The release workflow builds both architectures with the version from the tag, runs `test_decompress`, and attaches `LinuxFS-1.2.3-x86.zip` and `LinuxFS-1.2.3-x64.zip` to a draft release. Each ZIP contains `LinuxFS.dll`, `linuxfs.exe` and `README.md`. Check the draft, then publish it.
+To publish a release, push a tag such as `v1.2.3` to GitHub. The release workflow builds both architectures with the version from the tag, runs `test_decompress`, and attaches `LinuxFS-1.2.3-x86.zip` and `LinuxFS-1.2.3-x64.zip` to a draft release. Each ZIP contains `LinuxFS.dll`, `linuxfs.exe`, `README.md` and `RenewalCustom.xml`. Check the draft, then publish it as a stable release: Renewal only sees the latest published release, and offers an update only when its version is higher than the installed one.
 
 To build the ZIPs locally, configure both architectures with the version, build the Release configurations, then run:
 

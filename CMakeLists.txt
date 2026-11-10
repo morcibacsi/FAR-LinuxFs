@@ -63,7 +63,7 @@ else()
     message(WARNING "plugin.hpp was not found in ${FAR_SDK_DIR}: skipping the FAR plugin")
 endif()
 
-install(FILES README.md DESTINATION .)
+install(FILES README.md RenewalCustom.xml DESTINATION .)
 
 set(package_arch "${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
 if(package_arch STREQUAL "X86")
